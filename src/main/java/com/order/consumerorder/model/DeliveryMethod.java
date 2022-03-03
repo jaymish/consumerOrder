@@ -19,7 +19,7 @@ public class DeliveryMethod {
     @OneToOne(cascade = CascadeType.ALL)
     private Address shippingorpickup;
 
-    public DeliveryMethod(){
+    /*public DeliveryMethod(){
         this.id= UUID.randomUUID().toString();
-    }
+    }*/
 }
