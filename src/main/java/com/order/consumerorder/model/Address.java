@@ -18,8 +18,5 @@ public class Address {
     private String state;
     private Integer zip;
 
-    /*public Address(){
 
-        this.id= UUID.randomUUID().toString();
-    }*/
 }

@@ -2,6 +2,7 @@ package com.order.consumerorder.repo.impl;
 
 import com.order.consumerorder.model.Orders;
 import com.order.consumerorder.repo.OrderRepo;
+import com.order.consumerorder.service.impl.EmailServiceImpl;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -17,6 +18,12 @@ public class OrderRepoImpl implements OrderRepo {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private EmailServiceImpl emailService;
+
+    public OrderRepoImpl(EmailServiceImpl emailService){
+        this.emailService=emailService;
+    }
+
     @Override
     public List<Orders> getAllOrders() {
         Query query = entityManager.createQuery("SELECT orders FROM Orders orders");
@@ -28,8 +35,7 @@ public class OrderRepoImpl implements OrderRepo {
 
     @Override
     public Orders getOrderById(String orderId) {
-        Query query = entityManager.createQuery("SELECT orders FROM Orders orders WHERE orders.id = :orderId ")
-                .setParameter("orderId",orderId);
+        Query query = entityManager.createQuery("SELECT orders FROM Orders orders WHERE orders.id = :orderId ").setParameter("orderId",orderId);
         List<Orders> ordersList = query.getResultList();
         System.out.println("here");
         System.out.println(ordersList);
@@ -40,8 +46,7 @@ public class OrderRepoImpl implements OrderRepo {
 
     @Override
     public List<Orders> getOrderByZip(int zip) {
-        Query query = entityManager.createQuery("SELECT orders FROM Orders orders WHERE orders.deliveryMethod.shippingorpickup.zip = :zip ")
-                .setParameter("zip",zip);
+        Query query = entityManager.createQuery("SELECT orders FROM Orders orders WHERE orders.deliveryMethod.shippingorpickup.zip = :zip ").setParameter("zip",zip);
         List<Orders> ordersList = query.getResultList();
         System.out.println("here");
         System.out.println(ordersList);
@@ -55,12 +60,14 @@ public class OrderRepoImpl implements OrderRepo {
         Orders orders = getOrderById(id);
         orders.setStatus("Cancel");
         entityManager.merge(orders);
+        emailService.sendSimpleMessage(orders.getCustomer().getEmail_id(),"Order Cancled","Thank you your order was cancled. Here is the detail of your order \n"+ orders.toString());
         return orders;
     }
 
     @Override
     public Orders saveOrder(Orders orders) {
         entityManager.persist(orders);
+        emailService.sendSimpleMessage(orders.getCustomer().getEmail_id(),"Order Created","Thank you your order was created. Here is the detail of your order \n"+ orders.toString());
         return orders;
     }
 }

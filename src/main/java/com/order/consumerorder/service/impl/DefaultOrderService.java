@@ -12,17 +12,15 @@ import java.util.List;
 public class DefaultOrderService implements OrderService {
 
     private OrderRepo orderRepo;
-    private EmailServiceImpl emailService;
 
-    public DefaultOrderService(OrderRepo orderRepo, EmailServiceImpl emailService){
+
+    public DefaultOrderService(OrderRepo orderRepo){
         this.orderRepo = orderRepo;
-        this.emailService = emailService;
     }
     @Override
     public boolean createOrder(Orders orders) {
         System.out.println(orders);
         orderRepo.saveOrder(orders);
-        emailService.sendSimpleMessage(orders.getCustomer().getEmail_id(),"Order Created","Thank you your order was created. Here is the detail of your order \n"+ orders.toString());
         return true;
     }
 
@@ -46,7 +44,6 @@ public class DefaultOrderService implements OrderService {
 
     @Override
     public Orders cancelOrder(String id) {
-        //logic to check if cancel is possible
         return orderRepo.orderCancel(id);
     }
 
